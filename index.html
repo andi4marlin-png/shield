@@ -77,19 +77,19 @@
 
       <div class="form-group">
         <label for="sections">Jumlah Section Silinder (S)</label>
-        <input type="number" id="sections" value="12" min="1" max="360" step="1" oninput="updateSimulation()">
+        <input type="number" id="sections" value="16" min="1" max="360" step="1" oninput="updateSimulation()">
       </div>
 
       <!-- Input Titik Awal Gulungan -->
       <div class="highlight-box">
         <div class="form-group" style="margin-bottom:8px;">
-          <label for="startMarkingNum" style="color:#38bdf8;">Titik Awal Gulungan (Nomor Input)</label>
+          <label for="startMarkingNum" style="color:#38bdf8;">Nomor Section Awal (Start di Jam 2)</label>
           <input type="number" id="startMarkingNum" value="0" min="0" step="1" oninput="updateSimulation()">
-          <span style="font-size:0.75rem; color:#94a3b8;">Nomor ini menjadi titik start awal yang ditempatkan di Jam 2.</span>
+          <span style="font-size:0.75rem; color:#94a3b8;">Nomor ini diposisikan di Jam 2. Rentang section: 0 s/d (S-1).</span>
         </div>
 
         <div class="form-group" style="margin-bottom:0;">
-          <label for="startPoint">Posisi Titik Awal Gulungan</label>
+          <label for="startPoint">Posisi Titik Start Gulungan</label>
           <input type="text" id="startPoint" value="Arah Jam 2 (Posisi Tetap)" readonly>
         </div>
       </div>
@@ -102,7 +102,7 @@
         <div class="result-row"><span class="result-label">Sudut Total Gulungan:</span><span class="result-val" id="resTotalAngle">-</span></div>
         <div class="result-row"><span class="result-label">Posisi Akhir Jam:</span><span class="result-val" id="resClockPos">-</span></div>
         <div class="result-row"><span class="result-label">Section Start (Jam 2):</span><span class="result-val" id="resSecStartLabel">-</span></div>
-        <div class="result-row"><span class="result-label">Posisi Akhir Section (CCW):</span><span class="result-val" id="resSecEnd">-</span></div>
+        <div class="result-row"><span class="result-label">Posisi Akhir Section:</span><span class="result-val" id="resSecEnd">-</span></div>
       </div>
     </div>
 
@@ -120,31 +120,32 @@
   </div>
 
   <script>
-    // =========================================================================
-    // LOGIKA SIMULASI DAN PENETAPAN JAM 2 SEBAGAI START
-    // =========================================================================
     function updateSimulation() {
       const d = parseFloat(document.getElementById('diameter').value) || 100;
       const l = parseFloat(document.getElementById('wireLength').value) || 500;
-      const s = parseInt(document.getElementById('sections').value) || 12;
-      const startMark = parseInt(document.getElementById('startMarkingNum').value) || 0;
+      const s = parseInt(document.getElementById('sections').value) || 16;
+      let startMark = parseInt(document.getElementById('startMarkingNum').value) || 0;
+      
+      // Pastikan startMark selalu dalam rentang 0 s/d (S-1)
+      startMark = ((startMark % s) + s) % s;
 
       // Kalkulasi Utama
       const circumference = Math.PI * d;
       const turns = l / circumference;
       const totalAngleDeg = turns * 360.0;
 
-      // Kunci Posisi Start Gulungan tepat di Jam 2 (60 derajat dari Jam 12 CW)
+      // Posisi Start Gulungan dikunci di Jam 2 (60 derajat dari Jam 12 CW)
       const startClockDeg = 60.0;
       const endClockDeg = (startClockDeg + totalAngleDeg) % 360.0;
 
       let endClockHour = endClockDeg / 30.0;
       if (endClockHour === 0) endClockHour = 12.0;
 
-      // Kalkulasi posisi section akhir dari titik start Jam 2 (Arah CCW)
+      // Hitung posisi section akhir kawat (Siklus 0 s/d S-1)
       const secAngleDeg = 360.0 / s;
       const ccwDegFromStart = (360.0 - (totalAngleDeg % 360.0)) % 360.0;
-      const secFromStart = (ccwDegFromStart / secAngleDeg) + startMark;
+      const secOffset = ccwDegFromStart / secAngleDeg;
+      const secFromStart = (startMark + secOffset) % s;
 
       // Display Hasil Kalkulasi
       document.getElementById('resCircumference').innerText = circumference.toFixed(2) + ' mm';
@@ -167,7 +168,7 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 1. Gambar Bodi Silinder
+      // 1. Bodi Silinder
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, 2 * Math.PI);
       ctx.fillStyle = '#1e293b';
@@ -176,7 +177,7 @@
       ctx.strokeStyle = '#475569';
       ctx.stroke();
 
-      // 2. Gambar Section Marking (Titik awal 'startMark' tepat diposisikan di Jam 2, berputar CCW)
+      // 2. Section Marking (Nomor startMark persis di Jam 2, urutan berputar CCW dalam rentang 0 s/d S-1)
       const secAngle = (2 * Math.PI) / s;
       const jam2AngleRad = -Math.PI / 2 + (startClockDeg * Math.PI / 180); // Radian Jam 2 (-30°)
       
@@ -185,7 +186,7 @@
       ctx.textBaseline = 'middle';
 
       for (let i = 0; i < s; i++) {
-        // Berjalan CCW mulai dari titik Awal Jam 2
+        // Sudut berputar CCW mulai dari Jam 2
         const angle = jam2AngleRad - i * secAngle;
         
         // Garis Marking
@@ -196,15 +197,15 @@
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Label Section (S[input], S[input+1], dst.)
-        const labelNum = startMark + i;
+        // Label Section Menggunakan Modulus (jika S=16, label hanya S0 s/d S15)
+        const labelNum = (startMark + i) % s;
         const tx = cx + (r + 26) * Math.cos(angle);
         const ty = cy + (r + 26) * Math.sin(angle);
         ctx.fillStyle = '#38bdf8';
         ctx.fillText('S' + labelNum, tx, ty);
       }
 
-      // 3. Gambar Gulungan Wire (CW dimulai persis dari Jam 2)
+      // 3. Gulungan Wire (Searah Jarum Jam / CW dari Jam 2)
       const totalRad = turns * 2 * Math.PI;
 
       ctx.beginPath();
@@ -227,7 +228,7 @@
       ctx.lineWidth = 4;
       ctx.stroke();
 
-      // 4. Marker Titik Awal Gulungan (Titik Start Jam 2)
+      // 4. Marker Titik Start Gulungan (Jam 2)
       const startX = cx + r * Math.cos(jam2AngleRad);
       const startY = cy + r * Math.sin(jam2AngleRad);
       
@@ -264,9 +265,8 @@
     // Jalankan Simulasi Awal
     updateSimulation();
 
-
     // =========================================================================
-    // DUKUNGAN AUTOMATIC PWA (SERVICE WORKER & MANIFEST INLINE)
+    // SERVICE WORKER & PWA MANIFEST INLINE
     // =========================================================================
     const manifestObj = {
       name: "Wire Silinder Simulasi & Marking",
@@ -293,7 +293,7 @@
 
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'wiresim-pwa-v2';
+        const CACHE_NAME = 'wiresim-pwa-v3';
         self.addEventListener('install', (e) => self.skipWaiting());
         self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
         self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
