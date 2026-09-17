@@ -120,7 +120,31 @@
   </div>
 
   <script>
+    const inputIds = ['diameter', 'wireLength', 'sections', 'startMarkingNum'];
+
+    // Simpan data form ke LocalStorage
+    function saveFormData() {
+      inputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) localStorage.setItem('wiresim_' + id, el.value);
+      });
+    }
+
+    // Muat data tersimpan dari LocalStorage saat pertama kali aplikasi dibuka
+    function loadFormData() {
+      inputIds.forEach(id => {
+        const el = document.getElementById(id);
+        const savedVal = localStorage.getItem('wiresim_' + id);
+        if (el && savedVal !== null) {
+          el.value = savedVal;
+        }
+      });
+    }
+
     function updateSimulation() {
+      // Simpan perubahan input terbaru secara langsung
+      saveFormData();
+
       const d = parseFloat(document.getElementById('diameter').value) || 100;
       const l = parseFloat(document.getElementById('wireLength').value) || 500;
       const s = parseInt(document.getElementById('sections').value) || 16;
@@ -262,7 +286,8 @@
       ctx.fillText('END', endX + 18, endY + 15);
     }
 
-    // Jalankan Simulasi Awal
+    // Jalankan Load Data & Simulasi saat Pertama Kali Dibuka
+    loadFormData();
     updateSimulation();
 
     // =========================================================================
@@ -293,7 +318,7 @@
 
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'wiresim-pwa-v3';
+        const CACHE_NAME = 'wiresim-pwa-v4';
         self.addEventListener('install', (e) => self.skipWaiting());
         self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
         self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
