@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Simulasi Gulungan Wire Silinder & Marking PWA</title>
+  <title>Simulasi Gulungan Wire & Marking PWA</title>
   
-  <!-- PWA Theme & Apple Web App Meta -->
+  <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WireSim PWA">
   
-  <!-- Manifest Dynamic Inline (Blob URI / Data URI) -->
+  <!-- Manifest Dynamic Inline -->
   <link rel="manifest" id="manifest-placeholder">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background-color: #0f172a; color: #f8fafc; padding: 16px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
     
-    header { width: 100%; max-width: 950px; display: flex; justify-content: space-between; items-center: center; margin-bottom: 16px; padding-bottom: 12px; border-b: 1px solid #334155; }
-    header h1 { font-size: 1.25rem; color: #38bdf8; font-weight: 700; flex: 1; }
+    header { width: 100%; max-width: 950px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+    header h1 { font-size: 1.2rem; color: #38bdf8; font-weight: 700; }
     
     .btn-pwa { background: #0284c7; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: none; transition: background 0.2s; }
     .btn-pwa:hover { background: #0369a1; }
@@ -37,13 +37,13 @@
     input:focus { border-color: #38bdf8; }
     input[readonly] { background: #182232; color: #38bdf8; border-color: #0284c7; cursor: not-allowed; }
     
-    .highlight-box { background: rgba(2, 132, 199, 0.15); border: 1px solid #0284c7; border-radius: 8px; padding: 10px; margin-bottom: 12px; }
+    .highlight-box { background: rgba(2, 132, 199, 0.15); border: 1px solid #0284c7; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
     
     .result-box { background: #0f172a; border-radius: 12px; padding: 14px; border: 1px solid #334155; margin-top: 14px; }
     .result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #334155; font-size: 0.85rem; }
     .result-row:last-child { border-bottom: none; }
     .result-label { color: #94a3b8; }
-    .result-val { font-weight: 700; color: #facc15; font-mono: monospace; }
+    .result-val { font-weight: 700; color: #facc15; font-family: monospace; }
     
     .canvas-container { display: flex; flex-direction: column; align-items: center; justify-content: center; }
     canvas { background: #0f172a; border-radius: 12px; border: 1px solid #334155; max-width: 100%; height: auto; }
@@ -56,14 +56,14 @@
 <body>
 
   <header>
-    <h1>🌀 WireSilinder POS & Marking PWA</h1>
+    <h1>🌀 Wire Silinder & Marking PWA</h1>
     <button id="pwaInstallBtn" class="btn-pwa">📲 Install App</button>
   </header>
 
   <div class="container">
     <!-- Panel Input Form -->
     <div class="card">
-      <h2>⚙️ Form Parameter & Marking</h2>
+      <h2>⚙️ Form Parameter Wire</h2>
       
       <div class="form-group">
         <label for="diameter">Diameter Silinder (D) [mm]</label>
@@ -80,29 +80,29 @@
         <input type="number" id="sections" value="12" min="1" max="360" step="1" oninput="updateSimulation()">
       </div>
 
-      <!-- Input Titik Awal Marking -->
+      <!-- Input Titik Awal Gulungan -->
       <div class="highlight-box">
         <div class="form-group" style="margin-bottom:8px;">
-          <label for="startMarkingNum" style="color:#38bdf8;">Titik Awal Marking (Nomor Awal)</label>
+          <label for="startMarkingNum" style="color:#38bdf8;">Titik Awal Gulungan (Nomor Input)</label>
           <input type="number" id="startMarkingNum" value="0" min="0" step="1" oninput="updateSimulation()">
-          <span style="font-size:0.75rem; color:#94a3b8;">Penomoran marking dimulai dari angka nol (0), 1, 2, dst.</span>
+          <span style="font-size:0.75rem; color:#94a3b8;">Nomor ini menjadi titik start awal yang ditempatkan di Jam 2.</span>
         </div>
 
         <div class="form-group" style="margin-bottom:0;">
-          <label for="startPoint">Posisi Titik Start Gulungan</label>
-          <input type="text" id="startPoint" value="Jam 2 (60° Searah Jarum Jam)" readonly>
+          <label for="startPoint">Posisi Titik Awal Gulungan</label>
+          <input type="text" id="startPoint" value="Arah Jam 2 (Posisi Tetap)" readonly>
         </div>
       </div>
 
       <!-- Hasil Kalkulasi -->
       <div class="result-box">
-        <h3 style="font-size:0.88rem; color:#38bdf8; margin-bottom:8px;">📊 Hasil Kalkulasi (2 Desimal)</h3>
+        <h3 style="font-size:0.88rem; color:#38bdf8; margin-bottom:8px;">📊 Hasil Kalkulasi</h3>
         <div class="result-row"><span class="result-label">Keliling Silinder (C):</span><span class="result-val" id="resCircumference">-</span></div>
         <div class="result-row"><span class="result-label">Total Putaran (N):</span><span class="result-val" id="resTurns">-</span></div>
         <div class="result-row"><span class="result-label">Sudut Total Gulungan:</span><span class="result-val" id="resTotalAngle">-</span></div>
         <div class="result-row"><span class="result-label">Posisi Akhir Jam:</span><span class="result-val" id="resClockPos">-</span></div>
-        <div class="result-row"><span class="result-label">Posisi Marking (dari Jam 12 CCW):</span><span class="result-val" id="resSec12">-</span></div>
-        <div class="result-row"><span class="result-label">Posisi Marking (dari Start Jam 2 CCW):</span><span class="result-val" id="resSecStart">-</span></div>
+        <div class="result-row"><span class="result-label">Section Start (Jam 2):</span><span class="result-val" id="resSecStartLabel">-</span></div>
+        <div class="result-row"><span class="result-label">Posisi Akhir Section (CCW):</span><span class="result-val" id="resSecEnd">-</span></div>
       </div>
     </div>
 
@@ -111,17 +111,17 @@
       <h2>🌀 Visualisasi Gulungan & Marking</h2>
       <canvas id="simCanvas" width="420" height="420"></canvas>
       <div class="legend">
-        <div class="legend-item"><span class="dot" style="background:#22c55e;"></span> Start (Jam 2)</div>
+        <div class="legend-item"><span class="dot" style="background:#22c55e;"></span> Start Gulungan (Jam 2)</div>
         <div class="legend-item"><span class="dot" style="background:#ef4444;"></span> Ujung Wire (End)</div>
-        <div class="legend-item"><span class="dot" style="background:#eab308;"></span> Wire (CW)</div>
-        <div class="legend-item"><span class="dot" style="background:#38bdf8;"></span> Marking (CCW)</div>
+        <div class="legend-item"><span class="dot" style="background:#eab308;"></span> Wire (Searah Jarum Jam)</div>
+        <div class="legend-item"><span class="dot" style="background:#38bdf8;"></span> Marking Section (CCW)</div>
       </div>
     </div>
   </div>
 
   <script>
     // =========================================================================
-    // LOGIK SIMULASI & PROSES KALKULASI
+    // LOGIKA SIMULASI DAN PENETAPAN JAM 2 SEBAGAI START
     // =========================================================================
     function updateSimulation() {
       const d = parseFloat(document.getElementById('diameter').value) || 100;
@@ -129,38 +129,32 @@
       const s = parseInt(document.getElementById('sections').value) || 12;
       const startMark = parseInt(document.getElementById('startMarkingNum').value) || 0;
 
-      // Calculation
+      // Kalkulasi Utama
       const circumference = Math.PI * d;
       const turns = l / circumference;
       const totalAngleDeg = turns * 360.0;
 
-      // Posisi Jam 2 = 60 degrees CW dari Jam 12
+      // Kunci Posisi Start Gulungan tepat di Jam 2 (60 derajat dari Jam 12 CW)
       const startClockDeg = 60.0;
       const endClockDeg = (startClockDeg + totalAngleDeg) % 360.0;
 
       let endClockHour = endClockDeg / 30.0;
       if (endClockHour === 0) endClockHour = 12.0;
 
-      // Section calculation (Counter-clockwise marking)
+      // Kalkulasi posisi section akhir dari titik start Jam 2 (Arah CCW)
       const secAngleDeg = 360.0 / s;
-      
-      // Section dari Jam 12 (CCW)
-      const ccwDegFrom12 = (360.0 - endClockDeg) % 360.0;
-      const secFrom12 = (ccwDegFrom12 / secAngleDeg) + startMark;
-
-      // Section dari Start (Jam 2) CCW
       const ccwDegFromStart = (360.0 - (totalAngleDeg % 360.0)) % 360.0;
       const secFromStart = (ccwDegFromStart / secAngleDeg) + startMark;
 
-      // Render 2 decimal places
+      // Display Hasil Kalkulasi
       document.getElementById('resCircumference').innerText = circumference.toFixed(2) + ' mm';
       document.getElementById('resTurns').innerText = turns.toFixed(2) + ' putaran';
       document.getElementById('resTotalAngle').innerText = totalAngleDeg.toFixed(2) + '°';
       document.getElementById('resClockPos').innerText = 'Jam ' + endClockHour.toFixed(2) + ' (' + endClockDeg.toFixed(2) + '°)';
-      document.getElementById('resSec12').innerText = 'Marking S' + secFrom12.toFixed(2);
-      document.getElementById('resSecStart').innerText = 'Marking S' + secFromStart.toFixed(2);
+      document.getElementById('resSecStartLabel').innerText = 'S' + startMark + ' (Jam 2)';
+      document.getElementById('resSecEnd').innerText = 'S' + secFromStart.toFixed(2);
 
-      // Draw Simulation Canvas
+      // Gambar pada Canvas
       drawCanvas(d, l, s, turns, startClockDeg, startMark);
     }
 
@@ -173,7 +167,7 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 1. Draw Cylinder Body
+      // 1. Gambar Bodi Silinder
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, 2 * Math.PI);
       ctx.fillStyle = '#1e293b';
@@ -182,17 +176,19 @@
       ctx.strokeStyle = '#475569';
       ctx.stroke();
 
-      // 2. Draw Section Markings (Counter-Clockwise starting from Jam 12)
+      // 2. Gambar Section Marking (Titik awal 'startMark' tepat diposisikan di Jam 2, berputar CCW)
       const secAngle = (2 * Math.PI) / s;
+      const jam2AngleRad = -Math.PI / 2 + (startClockDeg * Math.PI / 180); // Radian Jam 2 (-30°)
+      
       ctx.font = 'bold 11px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
       for (let i = 0; i < s; i++) {
-        // -PI/2 is Jam 12. CCW -> Subtract angle
-        const angle = -Math.PI / 2 - i * secAngle;
+        // Berjalan CCW mulai dari titik Awal Jam 2
+        const angle = jam2AngleRad - i * secAngle;
         
-        // Marking Line
+        // Garis Marking
         ctx.beginPath();
         ctx.moveTo(cx + (r - 12) * Math.cos(angle), cy + (r - 12) * Math.sin(angle));
         ctx.lineTo(cx + (r + 10) * Math.cos(angle), cy + (r + 10) * Math.sin(angle));
@@ -200,7 +196,7 @@
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Label Marking berawal dari angka nol/startMark (S0, S1, S2...)
+        // Label Section (S[input], S[input+1], dst.)
         const labelNum = startMark + i;
         const tx = cx + (r + 26) * Math.cos(angle);
         const ty = cy + (r + 26) * Math.sin(angle);
@@ -208,18 +204,16 @@
         ctx.fillText('S' + labelNum, tx, ty);
       }
 
-      // 3. Draw Wire Coiling (Clockwise starting from Jam 2)
-      // Jam 2 = -90° + 60° = -30° (-PI/6 rad)
-      const startRad = -Math.PI / 2 + (startClockDeg * Math.PI / 180);
+      // 3. Gambar Gulungan Wire (CW dimulai persis dari Jam 2)
       const totalRad = turns * 2 * Math.PI;
 
       ctx.beginPath();
       const numPoints = 250;
       for (let i = 0; i <= numPoints; i++) {
         const progress = i / numPoints;
-        const currentAngle = startRad + progress * totalRad;
+        const currentAngle = jam2AngleRad + progress * totalRad;
         
-        // Spiral offset for multi-turn visualization
+        // Offset spiral untuk membedakan tiap putaran
         const radiusOffset = (turns > 1) ? (progress * 12) % 12 : 0;
         const currentRadius = r - 15 + radiusOffset;
         
@@ -233,9 +227,9 @@
       ctx.lineWidth = 4;
       ctx.stroke();
 
-      // 4. Draw Start Point Marker (Arah Jam 2)
-      const startX = cx + r * Math.cos(startRad);
-      const startY = cy + r * Math.sin(startRad);
+      // 4. Marker Titik Awal Gulungan (Titik Start Jam 2)
+      const startX = cx + r * Math.cos(jam2AngleRad);
+      const startY = cy + r * Math.sin(jam2AngleRad);
       
       ctx.beginPath();
       ctx.arc(startX, startY, 7, 0, 2 * Math.PI);
@@ -247,10 +241,10 @@
 
       ctx.fillStyle = '#22c55e';
       ctx.font = 'bold 12px sans-serif';
-      ctx.fillText('START (Jam 2)', startX + 42, startY);
+      ctx.fillText('START (S' + startMark + ')', startX + 45, startY);
 
-      // 5. Draw End Point Marker (Ujung Wire)
-      const endRad = startRad + totalRad;
+      // 5. Marker Ujung Wire (End)
+      const endRad = jam2AngleRad + totalRad;
       const endX = cx + (r - 8) * Math.cos(endRad);
       const endY = cy + (r - 8) * Math.sin(endRad);
 
@@ -267,15 +261,13 @@
       ctx.fillText('END', endX + 18, endY + 15);
     }
 
-    // Run Initial Simulation
+    // Jalankan Simulasi Awal
     updateSimulation();
 
 
     // =========================================================================
-    // DUKUNGAN AUTOMATIC PWA (SERVICE WORKER & MANIFEST) UNTUK GITHUB PAGES
+    // DUKUNGAN AUTOMATIC PWA (SERVICE WORKER & MANIFEST INLINE)
     // =========================================================================
-    
-    // 1. Generate Web Manifest secara Dynamic
     const manifestObj = {
       name: "Wire Silinder Simulasi & Marking",
       short_name: "WireSim PWA",
@@ -299,31 +291,23 @@
     const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
     document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
-    // 2. Register Inline Service Worker
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'wiresim-pwa-v1';
-        self.addEventListener('install', (e) => {
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(self.clients.claim());
-        });
-        self.addEventListener('fetch', (e) => {
-          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-        });
+        const CACHE_NAME = 'wiresim-pwa-v2';
+        self.addEventListener('install', (e) => self.skipWaiting());
+        self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+        self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
       `;
       const swBlob = new Blob([swCode], { type: 'application/javascript' });
       const swUrl = URL.createObjectURL(swBlob);
 
       window.addEventListener('load', () => {
         navigator.serviceWorker.register(swUrl)
-          .then(reg => console.log('PWA Service Worker Aktif:', reg.scope))
-          .catch(err => console.error('Gagal Registrasi SW:', err));
+          .then(reg => console.log('SW PWA Aktif:', reg.scope))
+          .catch(err => console.error('Gagal SW:', err));
       });
     }
 
-    // 3. Prompt Tombol Install App
     let deferredPrompt;
     const installBtn = document.getElementById('pwaInstallBtn');
 
@@ -336,10 +320,7 @@
     installBtn.addEventListener('click', () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User menginstall PWA');
-          }
+        deferredPrompt.userChoice.then(() => {
           deferredPrompt = null;
           installBtn.style.display = 'none';
         });
